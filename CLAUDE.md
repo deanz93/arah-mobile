@@ -1,113 +1,51 @@
-# arah-mobile — AI Agent Instructions
+# CLAUDE.md — arah-mobile
 
-## What this service is
+## What This Repo Does
+iOS + Android navigation app for the Arah platform. The primary user-facing product: real-time map, turn-by-turn navigation, community hazard reports, Malaysia-specific alerts.
 
-`arah-mobile` is the React Native 0.74 mobile application for Arah — Malaysia's sovereign, community-driven navigation platform. It delivers real-time GPS turn-by-turn navigation (via Valhalla routing), place search (via self-hosted Nominatim), live community road reports (via Firestore), and bilingual (Bahasa Malaysia / English) voice guidance. The app is the primary user-facing product in the Arah ecosystem.
+## Tech Stack
+- React Native 0.74 + TypeScript (strict mode)
+- **NativeWind v4** — Tailwind CSS for React Native (primary styling system)
+- React Native Paper v5 — material component library
+- MapLibre GL React Native — map rendering
+- Zustand — global client state
+- TanStack Query v5 — server/async state
+- Jest + React Native Testing Library — unit + component tests
 
-## Repo structure
+## Non-Negotiable: Styling Rules
+- **NativeWind only**: use `className="..."` Tailwind classes on all React Native elements
+- **Never** use `StyleSheet.create()` for colors, spacing, or layout
+- **Never** hardcode hex colors — use Tailwind theme tokens (defined in `tailwind.config.js`)
+- Animations: only use `Animated.style` (not className) for animated values — that's the one exception
+- Install new design tokens in `tailwind.config.js` under `theme.extend.colors`
 
-```
-App.tsx                          — root component; mounts QueryClientProvider + AppNavigator
-index.js                         — RN entry point
-src/
-  types/index.ts                 — all shared TypeScript types (Coordinates, Route, Report, ManoeuvreType, NavigationState, etc.)
-  constants/index.ts             — API_URL, TILE_URL, SOCKET_URL, VALHALLA_URL, NOMINATIM_URL, MAP_CONFIG, REPORT_TTL_HOURS, REROUTE_THRESHOLD_METERS
-  navigation/
-    index.tsx                    — AppNavigator: Stack (Onboarding | Main+Search+RoutePreview+Navigation+Report)
-    types.ts                     — RootStackParamList, MainTabParamList
-  screens/
-    MapScreen.tsx                — main map view; composes ArahMapView + SearchBar + ReportFab
-    SearchScreen.tsx             — Nominatim search; returns SearchResult via route callback
-    RoutePreviewScreen.tsx       — shows route alternatives; triggers navigation start
-    NavigationScreen.tsx         — active navigation; ManoeuvreBar + NavBottomBar + TTS voice
-    ReportScreen.tsx             — community report submission modal
-    OnboardingScreen.tsx         — Firebase Google Sign-In entry
-    SettingsScreen.tsx           — language, route prefs, saved places
-  components/
-    Map/ArahMapView.tsx          — MapLibre GL map with PMTiles style
-    Map/UserMarker.tsx           — animated current location marker
-    Map/ReportMarker.tsx         — community report pins on map
-    Map/RouteLayer.tsx           — polyline route overlay
-    Navigation/ManoeuvreBar.tsx  — top instruction banner during navigation
-    Navigation/NavBottomBar.tsx  — ETA / distance / cancel during navigation
-    Report/ReportFab.tsx         — floating action button to open report modal
-    Search/SearchBar.tsx         — tap-to-navigate search input
-  store/
-    mapStore.ts                  — Zustand: cameraCenter, zoomLevel, userLocation, isFollowingUser
-    routingStore.ts              — Zustand: routes, activeRoute, manoeuvre index, NavigationState, progress
-    reportStore.ts               — Zustand: in-memory list of active community reports
-    userStore.ts                 — Zustand: UserProfile, language, routePreferences
-  services/
-    api.ts                       — Axios instance with Firebase ID token interceptor (base: API_URL/v1)
-    locationService.ts           — react-native-geolocation-service watchPosition wrapper
-    routingService.ts            — getRoutes(from, to, options) → Route[] via VALHALLA_URL
-    geocodingService.ts          — searchPlaces(q) + reverseGeocode(coords) via NOMINATIM_URL
-    reportService.ts             — subscribeToReports(bbox) Firestore listener + submitReport + voteReport
-  hooks/
-    useLocation.ts               — GPS watcher; syncs userLocation + camera when isFollowingUser
-  utils/
-    geoUtils.ts                  — haversineDistance, bboxFromCenter, bearing
-    formatters.ts                — formatDistance, formatDuration, formatTollCost, formatETA (BM/EN)
-  __tests__/
-    utils/formatters.test.ts
-    utils/geoUtils.test.ts
-android/                         — Android project (minSdk 24, targetSdk 34)
-ios/                             — iOS project (Podfile)
-```
+## Non-Negotiable: Testing Rules
+- Every new component → co-located `__tests__/ComponentName.test.tsx`
+- Every new screen → `src/__tests__/screens/ScreenName.smoke.test.tsx` (renders without crash)
+- New navigation flows → `src/__tests__/flows/FlowName.test.tsx`
+- All tests must pass before opening a PR: `npm test`
+- Minimum: test that component renders, test the primary user interaction, test the error/empty state
 
-## How to run
+## Non-Negotiable: Design + UX Rules
+- **3-tap rule**: any core action (start navigation, submit report, find POI) ≤ 3 taps from map
+- **48dp minimum** touch targets — use `className="min-h-12 min-w-12"` on all Touchable elements
+- **Loading states required** on every async action (use skeleton or spinner — never blank screen)
+- **Error states must have a retry CTA** — never a dead-end error with no action
+- **Offline-first**: every screen must gracefully degrade with no network (show cached data or clear offline message)
+- `accessibilityLabel` required on all `TouchableOpacity`, `Pressable`, `TouchableHighlight`
+- RTL support must not be broken — test with `I18nManager.isRTL = true` for Jawi users
 
+## Dev Commands
 ```bash
-# Install JS dependencies
-yarn install   # or: npm install
-
-# Android
-yarn android   # starts Metro + builds and launches on emulator/device
-
-# iOS (macOS only)
-cd ios && pod install && cd ..
-yarn ios
-
-# Metro only (if device already has the app)
-yarn start
-
-# Type-check
-yarn typecheck
-
-# Lint
-yarn lint
-
-# Unit tests
-yarn test
-yarn test:coverage
+npm ci
+npx react-native run-android     # Android dev build
+npx react-native run-ios         # iOS dev build (macOS only)
+npm test                          # Jest unit + component tests
+npm run test:watch               # Watch mode
+npm run lint                      # ESLint
+npm run typecheck                 # tsc --noEmit
 ```
 
-Environment: copy `.env.example` to `.env` and fill in values. For local dev, Android emulator URLs use `10.0.2.2` (host loopback).
-
-## Coding conventions
-
-- **TypeScript strict mode** — `noImplicitAny: true`; all types live in `src/types/index.ts`; never use `any` unless casting raw API data (cast immediately, document why)
-- **Path alias** — use `@/` for all `src/` imports (e.g. `import { Route } from '@/types'`)
-- **Zustand stores** — one concern per store file; export a single `use*Store` hook; derive state with selectors inside components, not in the store
-- **TanStack Query** — use for all remote data fetching that needs caching/deduplication (routes, geocoding results); use Zustand for UI state (camera, navigation progress)
-- **Firebase Firestore** — real-time listeners via `onSnapshot` in `reportService.ts`; always unsubscribe in `useEffect` cleanup
-- **Bilingual** — all user-facing strings must support `Language = 'ms' | 'en'`; BM is default; pass `lang` from `userStore.user.preferredLanguage` to formatters
-- **No inline styles** for complex layouts — use `StyleSheet.create`
-- **Service layer** — screens never call axios/firestore directly; always go through `src/services/`
-- **Error handling** — services throw; screens catch and show an `Alert` or error state; never swallow errors silently
-
-## Next story
-
-Read `docs/bmad/04-stories.md` and pick the first story with status `🔲 Todo`.
-
-## Cross-repo dependencies
-
-| Service | URL constant | Purpose |
-|---------|-------------|---------|
-| `arah-api` (Fastify) | `API_URL` = `api.arah.my` | Authenticated REST: user profile, report votes, toll data |
-| `arah-routing` (Valhalla) | `VALHALLA_URL` = `routing.arah.my` | Turn-by-turn route calculation |
-| `arah-geocoding` (Nominatim) | `NOMINATIM_URL` = `geocode.arah.my` | Place search and reverse geocoding |
-| `arah-tile-server` (PMTiles) | `TILE_URL` = `tiles.arah.my` | MapLibre vector tiles + style.json |
-| Firebase Firestore | (SDK) | Community reports real-time sync |
-| Firebase Auth | (SDK) | Google Sign-In + Phone OTP |
-| `realtime.arah.my` | `SOCKET_URL` | WebSocket for live traffic events (socket.io-client) |
+## Branch + Story Format
+Stories: `docs/bmad/04-stories.md`. Branch format: `feature/MOB-NNN-short-description`
+Commit format: `feat(mobile): [what changed]` (Conventional Commits)
