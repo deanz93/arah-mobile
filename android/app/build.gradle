@@ -1,0 +1,71 @@
+apply plugin: "com.android.application"
+apply plugin: "org.jetbrains.kotlin.android"
+apply plugin: "com.facebook.react"
+apply plugin: "com.google.gms.google-services"
+apply plugin: "com.google.firebase.crashlytics"
+
+react {
+    /* Hermes JS engine */
+    hermesEnabled = true
+}
+
+android {
+    ndkVersion rootProject.ext.ndkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+    compileSdk rootProject.ext.compileSdkVersion
+
+    namespace "com.arah.app"
+    defaultConfig {
+        applicationId "com.arah.app"
+        minSdk rootProject.ext.minSdkVersion
+        targetSdk rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName "0.1.0"
+    }
+
+    signingConfigs {
+        release {
+            if (System.getenv("ANDROID_KEYSTORE_BASE64")) {
+                // CI: decode keystore from env
+                def keystoreFile = file("${buildDir}/keystore.jks")
+                keystoreFile.bytes = Base64.decoder.decode(System.getenv("ANDROID_KEYSTORE_BASE64"))
+                storeFile keystoreFile
+                keyAlias System.getenv("ANDROID_KEY_ALIAS")
+                storePassword System.getenv("ANDROID_STORE_PASSWORD")
+                keyPassword System.getenv("ANDROID_KEY_PASSWORD")
+            } else if (project.hasProperty("ARAH_KEYSTORE_FILE")) {
+                storeFile file(ARAH_KEYSTORE_FILE)
+                keyAlias ARAH_KEY_ALIAS
+                storePassword ARAH_STORE_PASSWORD
+                keyPassword ARAH_KEY_PASSWORD
+            }
+        }
+    }
+
+    buildTypes {
+        debug {
+            applicationIdSuffix ".debug"
+            debuggable true
+        }
+        release {
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.release
+        }
+    }
+}
+
+dependencies {
+    implementation("com.facebook.react:react-android")
+    implementation("com.facebook.react:hermes-android")
+    // Firebase BoM — manages all Firebase version compatibility
+    implementation platform("com.google.firebase:firebase-bom:33.2.0")
+    implementation("com.google.firebase:firebase-analytics-ktx")
+    implementation("com.google.firebase:firebase-crashlytics-ktx")
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-firestore-ktx")
+    implementation("com.google.firebase:firebase-messaging-ktx")
+}
+
+apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle")
+applyNativeModulesAppBuildGradle(project)

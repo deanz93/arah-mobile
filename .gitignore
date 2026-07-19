@@ -1,0 +1,16 @@
+node_modules/
+.env
+coverage/
+.DS_Store
+# Android
+android/local.properties
+android/app/google-services.json
+android/.gradle/
+android/app/build/
+android/build/
+# iOS
+ios/GoogleService-Info.plist
+ios/Pods/
+ios/build/
+*.keystore
+!debug.keystore
