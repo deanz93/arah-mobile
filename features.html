@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Features — arah-mobile</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: { extend: { colors: {
+        'teal': { DEFAULT: '#00D8A0' },
+        'amber': { DEFAULT: '#FF7040' },
+        'bg': '#080D12',
+        'surface': '#111820',
+        'surface2': '#1A2433',
+      }}}
+    }
+  </script>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; }
+    .code-block { background: #0D1117; border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 1.25rem; overflow-x: auto; }
+    code { font-family: 'Fira Code', 'Cascadia Code', monospace; font-size: 0.85rem; color: #00D8A0; }
+    pre code { color: #e8f0fa; }
+    .nav-link { font-size: 0.875rem; color: #7A94B0; transition: color 0.15s; }
+    .nav-link:hover, .nav-link.active { color: #e8f0fa; }
+  </style>
+</head>
+<body class="bg-bg text-slate-300 min-h-screen">
+
+  <!-- NAV -->
+  <nav class="fixed top-0 inset-x-0 z-50 border-b border-white/[0.07] bg-bg/90 backdrop-blur-xl">
+    <div class="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="index.html" class="font-black text-xl tracking-tight text-white">
+        Ar<span class="text-teal">ah</span>
+        <span class="text-slate-500 font-semibold text-base ml-1">/ mobile</span>
+      </a>
+      <div class="flex items-center gap-5">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="features.html" class="nav-link active">Features</a>
+        <a href="roadmap.html" class="nav-link">Roadmap</a>
+        <a href="contributing.html" class="nav-link">Contributing</a>
+        <a href="https://github.com/deanz93/arah-mobile" class="bg-teal text-bg text-sm font-bold px-4 py-1.5 rounded-lg hover:opacity-80 transition-opacity">GitHub →</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HEADER -->
+  <section class="pt-36 pb-12 px-6">
+    <div class="max-w-5xl mx-auto">
+      <div class="inline-flex items-center gap-2 bg-surface2 border border-white/[0.07] rounded-full px-4 py-1.5 text-xs text-teal font-semibold mb-5 tracking-wide uppercase">
+        10 Epics · 105 Stories
+      </div>
+      <h1 class="text-4xl md:text-5xl font-black text-white tracking-tight mb-4">Features</h1>
+      <p class="text-lg text-slate-400 max-w-2xl leading-relaxed">
+        105 planned features across 10 development epics — from GPS rendering to Malaysia-specific flood alerts and gamified community reporting.
+      </p>
+    </div>
+  </section>
+
+  <!-- EPIC GRID -->
+  <section class="px-6 pb-20">
+    <div class="max-w-5xl mx-auto grid md:grid-cols-2 gap-6">
+
+      <!-- Map & Location -->
+      <div class="bg-surface border border-white/[0.07] rounded-2xl p-6 hover:border-teal/20 transition-colors">
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">🗺️</span>
+            <h3 class="text-lg font-bold text-white">Map &amp; Location</h3>
+          </div>
+          <span class="bg-teal/10 text-teal text-xs font-bold px-2.5 py-1 rounded-full">25 stories</span>
+        </div>
+        <ul class="text-sm text-slate-400 space-y-1.5">
+          <li class="flex items-start gap-2"><span class="text-teal mt-0.5">›</span> Real-time GPS position tracking with heading</li>
+          <li class="flex items-start gap-2"><span class="text-teal mt-0.5">›</span> MapLibre GL vector tile rendering</li>
+          <li class="flex items-start gap-2"><span class="text-teal mt-0.5">›</span> Zoom, pan, compass, and tilt controls</li>
+          <li class="flex items-start gap-2"><span class="text-teal mt-0.5">›</span> Layer toggles: satellite, traffic, incident overlay</li>
+        </ul>
+      </div>
+
+      <!-- Routing & Navigation -->
+      <div class="bg-surface border border-white/[0.07] rounded-2xl p-6 hover:border-teal/20 transition-colors">
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">🧭</span>
+            <h3 class="text-lg font-bold text-white">Routing &amp; Navigation</h3>
+          </div>
+          <span class="bg-teal/10 text-teal text-xs font-bold px-2.5 py-1 rounded-full">12 stories</span>
+        </div>
+        <ul class="text-sm text-slate-400 space-y-1.5">
+          <li class="flex items-start gap-2"><span class="text-teal mt-0.5">›</span> Turn-by-turn Bahasa Malaysia voice TTS</li>
+          <li class="flex items-start gap-2"><span class="text-teal mt-0.5">›</span> 3 route alternatives: fastest, toll-free, shortest</li>
+          <li class="flex items-start gap-2"><span class="text-teal mt-0.5">›</span> Lane guidance, waypoints, and ETA sharing</li>
+          <li class="flex items-start gap-2"><span class="text-teal mt-0.5">›</span> Automatic rerouting on deviation</li>
+        </ul>
+      </div>
+
+      <!-- Community Reports -->
+      <div class="bg-surface border border-white/[0.07] rounded-2xl p-6 hover:border-teal/20 transition-colors">
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">📡</span>
+            <h3 class="text-lg font-bold text-white">Community Reports</h3>
+          </div>
+          <span class="bg-amber/10 text-amber text-xs font-bold px-2.5 py-1 rounded-full">17 stories</span>
+        </div>
+        <ul class="text-sm text-slate-400 space-y-1.5">
+          <li class="flex items-start gap-2"><span class="text-teal mt-0.5">›</span> 10 report types: flood, accident, roadblock, hazard…</li>
+          <li class="flex items-start gap-2"><span class="text-teal mt-0.5">›</span> 1-tap submit with optional photo attachment</li>
+          <li class="flex items-start gap-2"><span class="text-teal mt-0.5">›</span> Real-time WebSocket broadcast to all drivers</li>
+          <li class="flex items-start gap-2"><span class="text-teal mt-0.5">›</span> Upvote/downvote, approach alerts at 500m</li>
+        </ul>
+      </div>
+
+      <!-- Real-Time WebSocket -->
+      <div class="bg-surface border border-white/[0.07] rounded-2xl p-6 hover:border-teal/20 transition-colors">
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">⚡</span>
+            <h3 class="text-lg font-bold text-white">Real-Time WebSocket</h3>
+          </div>
+          <span class="bg-teal/10 text-teal text-xs font-bold px-2.5 py-1 rounded-full">5 stories</span>
+        </div>
+        <ul class="text-sm text-slate-400 space-y-1.5">
+          <li class="flex items-start gap-2"><span class="text-teal mt-0.5">›</span> Live incident layer with sub-1s latency</li>
+          <li class="flex items-start gap-2"><span class="text-teal mt-0.5">›</span> Live driver count visible on map</li>
+          <li class="flex items-start gap-2"><span class="text-teal mt-0.5">›</span> Automatic reconnection and backoff strategy</li>
+          <li class="flex items-start gap-2"><span class="text-teal mt-0.5">›</span> Efficient binary framing for bandwidth savings</li>
+        </ul>
+      </div>
+
+      <!-- Malaysia-Specific -->
+      <div class="bg-surface border border-white/[0.07] rounded-2xl p-6 hover:border-teal/20 transition-colors">
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">🇲🇾</span>
+            <h3 class="text-lg font-bold text-white">Malaysia-Specific</h3>
+          </div>
+          <span class="bg-amber/10 text-amber text-xs font-bold px-2.5 py-1 rounded-full">14 stories</span>
+        </div>
+        <ul class="text-sm text-slate-400 space-y-1.5">
+          <li class="flex items-start gap-2"><span class="text-teal mt-0.5">›</span> Flash flood evacuation route overlay</li>
+          <li class="flex items-start gap-2"><span class="text-teal mt-0.5">›</span> Zon Selamat school zones with speed limit enforcement</li>
+          <li class="flex items-start gap-2"><span class="text-teal mt-0.5">›</span> Waktu solat overlay, Balik Kampung traffic prediction</li>
+          <li class="flex items-start gap-2"><span class="text-teal mt-0.5">›</span> PLUS R&R locator, JB-SG checkpoint wait time, toll cost in RM</li>
+        </ul>
+      </div>
+
+      <!-- Search & Discovery -->
+      <div class="bg-surface border border-white/[0.07] rounded-2xl p-6 hover:border-teal/20 transition-colors">
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">🔍</span>
+            <h3 class="text-lg font-bold text-white">Search &amp; Discovery</h3>
+          </div>
+          <span class="bg-teal/10 text-teal text-xs font-bold px-2.5 py-1 rounded-full">9 stories</span>
+        </div>
+        <ul class="text-sm text-slate-400 space-y-1.5">
+          <li class="flex items-start gap-2"><span class="text-teal mt-0.5">›</span> Nominatim-powered address and POI search</li>
+          <li class="flex items-start gap-2"><span class="text-teal mt-0.5">›</span> Recent places history and saved favourites</li>
+          <li class="flex items-start gap-2"><span class="text-teal mt-0.5">›</span> Category search: petrol, food, hospital, mosque</li>
+          <li class="flex items-start gap-2"><span class="text-teal mt-0.5">›</span> Street-level disambiguation for Malaysian addresses</li>
+        </ul>
+      </div>
+
+      <!-- Auth & Profile -->
+      <div class="bg-surface border border-white/[0.07] rounded-2xl p-6 hover:border-teal/20 transition-colors">
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">👤</span>
+            <h3 class="text-lg font-bold text-white">Auth &amp; Profile</h3>
+          </div>
+          <span class="bg-amber/10 text-amber text-xs font-bold px-2.5 py-1 rounded-full">14 stories</span>
+        </div>
+        <ul class="text-sm text-slate-400 space-y-1.5">
+          <li class="flex items-start gap-2"><span class="text-teal mt-0.5">›</span> Google Sign-In and Phone OTP authentication</li>
+          <li class="flex items-start gap-2"><span class="text-teal mt-0.5">›</span> Gamification XP system with badges and rankings</li>
+          <li class="flex items-start gap-2"><span class="text-teal mt-0.5">›</span> Privacy controls and PDPA data export</li>
+          <li class="flex items-start gap-2"><span class="text-teal mt-0.5">›</span> Guest mode with limited feature access</li>
+        </ul>
+      </div>
+
+      <!-- Offline & Performance -->
+      <div class="bg-surface border border-white/[0.07] rounded-2xl p-6 hover:border-teal/20 transition-colors">
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">📦</span>
+            <h3 class="text-lg font-bold text-white">Offline &amp; Performance</h3>
+          </div>
+          <span class="bg-teal/10 text-teal text-xs font-bold px-2.5 py-1 rounded-full">10 stories</span>
+        </div>
+        <ul class="text-sm text-slate-400 space-y-1.5">
+          <li class="flex items-start gap-2"><span class="text-teal mt-0.5">›</span> PMTiles offline map download by region</li>
+          <li class="flex items-start gap-2"><span class="text-teal mt-0.5">›</span> Delta tile updates — only changed tiles re-download</li>
+          <li class="flex items-start gap-2"><span class="text-teal mt-0.5">›</span> Cold launch target: under 3 seconds</li>
+          <li class="flex items-start gap-2"><span class="text-teal mt-0.5">›</span> Tile caching with LRU eviction policy</li>
+        </ul>
+      </div>
+
+      <!-- Safety & Emergency -->
+      <div class="bg-surface border border-white/[0.07] rounded-2xl p-6 hover:border-teal/20 transition-colors">
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">🚨</span>
+            <h3 class="text-lg font-bold text-white">Safety &amp; Emergency</h3>
+          </div>
+          <span class="bg-red-500/10 text-red-400 text-xs font-bold px-2.5 py-1 rounded-full">5 stories</span>
+        </div>
+        <ul class="text-sm text-slate-400 space-y-1.5">
+          <li class="flex items-start gap-2"><span class="text-teal mt-0.5">›</span> Overspeed alert with haptic and audio feedback</li>
+          <li class="flex items-start gap-2"><span class="text-teal mt-0.5">›</span> Emergency SOS with location share</li>
+          <li class="flex items-start gap-2"><span class="text-teal mt-0.5">›</span> Route deviation detection and confirmation</li>
+          <li class="flex items-start gap-2"><span class="text-teal mt-0.5">›</span> Fatigue warning for long-distance drives</li>
+        </ul>
+      </div>
+
+      <!-- Accessibility & Settings -->
+      <div class="bg-surface border border-white/[0.07] rounded-2xl p-6 hover:border-teal/20 transition-colors">
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">♿</span>
+            <h3 class="text-lg font-bold text-white">Accessibility &amp; Settings</h3>
+          </div>
+          <span class="bg-teal/10 text-teal text-xs font-bold px-2.5 py-1 rounded-full">9 stories</span>
+        </div>
+        <ul class="text-sm text-slate-400 space-y-1.5">
+          <li class="flex items-start gap-2"><span class="text-teal mt-0.5">›</span> Dark and light map theme toggle</li>
+          <li class="flex items-start gap-2"><span class="text-teal mt-0.5">›</span> Adjustable font size and UI scaling</li>
+          <li class="flex items-start gap-2"><span class="text-teal mt-0.5">›</span> RTL layout support for Jawi/Arabic UI</li>
+          <li class="flex items-start gap-2"><span class="text-teal mt-0.5">›</span> Full screen reader accessibility labels</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- NATIVEWIND NOTE -->
+  <section class="px-6 pb-24">
+    <div class="max-w-5xl mx-auto">
+      <div class="bg-surface2 border border-teal/20 rounded-2xl p-6 flex gap-4 items-start">
+        <span class="text-teal text-2xl mt-0.5">💡</span>
+        <div>
+          <h3 class="text-white font-bold mb-1">NativeWind-First Styling</h3>
+          <p class="text-slate-400 text-sm leading-relaxed">
+            All UI components in arah-mobile are built with <span class="text-teal font-semibold">NativeWind v4</span> (Tailwind CSS for React Native).
+            No <code>StyleSheet.create()</code> allowed — contributors must use Tailwind utility classes exclusively.
+            This keeps styling consistent, reviewable, and easy to theme.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-white/[0.07] bg-surface mt-20 py-10">
+    <div class="max-w-5xl mx-auto px-6 flex flex-wrap justify-between items-start gap-6">
+      <div>
+        <div class="font-black text-lg text-white">Ar<span class="text-teal">ah</span></div>
+        <p class="text-xs text-slate-500 mt-1">Navigasi Malaysia, Tanpa Kompromi.</p>
+      </div>
+      <div class="flex gap-8 text-sm">
+        <div>
+          <div class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Platform</div>
+          <div class="flex flex-col gap-1.5">
+            <a href="https://deanz93.github.io/arah/" class="text-slate-400 hover:text-white">Main Site</a>
+            <a href="https://github.com/deanz93/arah" class="text-slate-400 hover:text-white">Monorepo</a>
+          </div>
+        </div>
+        <div>
+          <div class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">This Repo</div>
+          <div class="flex flex-col gap-1.5">
+            <a href="https://github.com/deanz93/arah-mobile" class="text-slate-400 hover:text-white">GitHub</a>
+            <a href="contributing.html" class="text-slate-400 hover:text-white">Contribute</a>
+            <a href="roadmap.html" class="text-slate-400 hover:text-white">Roadmap</a>
+          </div>
+        </div>
+      </div>
+      <div class="text-xs text-slate-600">MIT License · Built in Malaysia 🇲🇾</div>
+    </div>
+  </footer>
+
+</body>
+</html>
