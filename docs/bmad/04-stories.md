@@ -2234,17 +2234,18 @@ Stories cover the full Islamic feature set: prayer times, doa naik kenderaan, mu
 **Status:** 🔲 Todo
 **Priority:** High
 
-**As a** Muslim driver **I want** to know if my journey qualifies as musafir (≥88.7 km Shafi'i school) **so that** I know I may shorten (qasar) and combine (jamak) my prayers.
+**As a** Muslim driver **I want** to know if my journey qualifies as musafir (≥81 km, kadar 2 marhalah penyelarasan baharu Malaysia) **so that** I know I may shorten (qasar) and combine (jamak) my prayers.
 
 **Acceptance criteria:**
-- [ ] A "🧳 Musafir" badge appears on `RoutePreviewScreen` when route distance ≥ 88.7 km
+- [ ] A "🧳 Musafir" badge appears on `RoutePreviewScreen` when route distance ≥ 81 km
 - [ ] Badge tapped opens an info sheet: "Jarak: 142 km · Anda layak qasar & jamak solat"
 - [ ] Info sheet explains: what musafir means, which prayers can be shortened, disclaimer "rujuk ulama tempatan"
+- [ ] Info sheet notes the threshold: "Kadar 2 marhalah (penyelarasan baharu): 81 km"
 - [ ] Badge is green for musafir, absent for non-musafir trips
 - [ ] Badge only shown when `islamicStore.settings.showMusafirBadge === true`
 - [ ] Distance taken from selected route's `distanceMeters` field
 
-**Technical notes:** `src/components/Islamic/MusafirBadge.tsx`; `useMusafir(origin, destination)` hook in `RoutePreviewScreen`; threshold `MUSAFIR_THRESHOLD_KM = 88.7`; Haversine distance from `geoUtils.haversineDistance`
+**Technical notes:** `src/components/Islamic/MusafirBadge.tsx`; `useMusafir(origin, destination)` hook in `RoutePreviewScreen`; threshold `MUSAFIR_THRESHOLD_KM = 81`; Haversine distance from `geoUtils.haversineDistance`
 **Estimate:** S
 
 ---
