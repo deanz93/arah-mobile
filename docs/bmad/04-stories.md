@@ -2133,3 +2133,242 @@ Stories are ordered by dependency and value. Work top-to-bottom within each epic
 **Estimate:** M
 
 ---
+
+---
+
+## Epic 9: Tetapan Islam (Islamic Settings)
+
+Stories cover the full Islamic feature set: prayer times, doa naik kenderaan, musafir calculator, nearest masjid, Qibla compass, prayer approaching alert, azan voice-pause, Halal POI filter, and Jumaat reminder. All prayer data sourced from `api.waktusolat.app/v2` (Malaysia) or `api.aladhan.com` (worldwide). Zone is auto-detected from GPS via `/zones/{lat}/{long}`.
+
+---
+
+### MOB-106: Islamic Settings screen — enable/disable toggle
+
+**Epic:** Tetapan Islam
+**Status:** 🔲 Todo
+**Priority:** MVP
+
+**As a** Muslim user **I want** to enable Islamic features in one place **so that** all Islamic overlays and alerts are visible when I need them and hidden when I don't.
+
+**Acceptance criteria:**
+- [ ] "Tetapan Islam" section appears in `SettingsScreen` below Pilihan Laluan, with a single **Aktifkan Ciri Islam** toggle
+- [ ] Toggling ON navigates or expands to the full `IslamicSettingsScreen`
+- [ ] Toggling OFF hides all Islamic overlays (prayer banner, Qibla, Musafir badge, doa modal)
+- [ ] Preference persisted in `islamicStore` (survived app restart via AsyncStorage)
+- [ ] Default state: disabled
+
+**Technical notes:** `src/screens/IslamicSettingsScreen.tsx`; `islamicStore.settings.enabled`; `navigation.navigate('IslamicSettings')`; add `IslamicSettings: undefined` to `RootStackParamList`
+**Estimate:** S
+
+---
+
+### MOB-107: Auto-detect user's prayer time zone from GPS
+
+**Epic:** Tetapan Islam
+**Status:** 🔲 Todo
+**Priority:** MVP
+
+**As a** Malaysian user **I want** my prayer time zone to be detected from my GPS location automatically **so that** I don't have to select a zone manually.
+
+**Acceptance criteria:**
+- [ ] On first enable of Islamic mode, app calls `GET https://api.waktusolat.app/v2/zones/{lat}/{long}` with user's current GPS
+- [ ] Detected zone code + full label (`negeri — lokasi`) is displayed in settings: e.g. "WLY01 — W.P. Kuala Lumpur & Putrajaya"
+- [ ] User can manually browse/override via `GET /zones` (list all) or `GET /zones/{state}` (filter by state)
+- [ ] Re-detection button available; re-runs the coordinate lookup
+- [ ] If GPS unavailable, prompt user to select zone from full list
+- [ ] Non-Malaysia: zone field hidden; worldwide AlAdhan (`api.aladhan.com`) used automatically based on live GPS
+
+**Technical notes:** `waktuSolatService.fetchZoneByCoords(lat, lng)` → `GET /v2/zones/{lat}/{long}`; `fetchZonesByState(state)` → `GET /v2/zones/{state}`; `fetchAllZones()` → `GET /v2/zones`; store detected zone in `islamicStore.settings.zone`
+**Estimate:** S
+
+---
+
+### MOB-108: Prayer times banner on map screen
+
+**Epic:** Tetapan Islam
+**Status:** 🔲 Todo
+**Priority:** MVP
+
+**As a** Muslim driver **I want** to see today's prayer times at a glance on the map screen **so that** I can plan my drive around solat.
+
+**Acceptance criteria:**
+- [ ] Compact horizontal banner renders below the search bar when Islamic mode is enabled
+- [ ] Shows all 6 waktu: Subuh, Syuruk, Zohor, Asar, Maghrib, Isyak with their times
+- [ ] Current waktu is highlighted (teal accent); next waktu shows countdown "17 min"
+- [ ] Displays Hijri date (e.g. "14 Muharram 1447") alongside Gregorian date
+- [ ] Prayer times refresh automatically at midnight
+- [ ] Loading skeleton shown while fetching; error state shows "Gagal mendapat waktu solat — Ketuk untuk cuba semula"
+- [ ] Tapping banner opens a full-screen prayer time detail sheet
+
+**Technical notes:** `src/components/Islamic/PrayerTimeBanner.tsx`; data from `islamicStore.prayerTimes`; `usePrayerTimes()` hook fetches on mount; `setInterval(checkNextPrayer, 60_000)` updates highlight every minute
+**Estimate:** M
+
+---
+
+### MOB-109: Doa naik kenderaan modal on navigation start
+
+**Epic:** Tetapan Islam
+**Status:** 🔲 Todo
+**Priority:** MVP
+
+**As a** Muslim driver **I want** the travel doa to appear when I start navigation **so that** I can easily recite it before departing.
+
+**Acceptance criteria:**
+- [ ] When user taps "Mula Navigasi" in `RoutePreviewScreen`, a bottom-sheet modal appears before navigation begins
+- [ ] Modal shows: Arabic text (right-aligned), romanised rumi, Malay translation, source (Az-Zukhruf 43:13–14)
+- [ ] **Audio recitation plays automatically** on modal open using `react-native-sound` (`assets/audio/doa_kenderaan.mp3` bundled in app)
+- [ ] Audio play/pause button in modal header; auto-stops when modal is dismissed
+- [ ] "Mula Perjalanan" button on modal dismisses it, stops audio, and starts navigation
+- [ ] Modal only shown when `islamicStore.settings.showDoaOnNavStart === true`
+- [ ] Swipe-down or back button also dismisses and stops audio
+- [ ] No network call required — audio and text are static assets
+
+**Technical notes:** `src/components/Islamic/DoaKenderaanModal.tsx`; `react-native-sound` for audio; audio asset at `assets/audio/doa_kenderaan.mp3`; triggered from `RoutePreviewScreen.tsx` before `navigation.navigate('Navigation', ...)`; Arabic text: سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا…
+**Estimate:** S
+
+---
+
+### MOB-110: Musafir (traveller) status badge on route preview
+
+**Epic:** Tetapan Islam
+**Status:** 🔲 Todo
+**Priority:** High
+
+**As a** Muslim driver **I want** to know if my journey qualifies as musafir (≥88.7 km Shafi'i school) **so that** I know I may shorten (qasar) and combine (jamak) my prayers.
+
+**Acceptance criteria:**
+- [ ] A "🧳 Musafir" badge appears on `RoutePreviewScreen` when route distance ≥ 88.7 km
+- [ ] Badge tapped opens an info sheet: "Jarak: 142 km · Anda layak qasar & jamak solat"
+- [ ] Info sheet explains: what musafir means, which prayers can be shortened, disclaimer "rujuk ulama tempatan"
+- [ ] Badge is green for musafir, absent for non-musafir trips
+- [ ] Badge only shown when `islamicStore.settings.showMusafirBadge === true`
+- [ ] Distance taken from selected route's `distanceMeters` field
+
+**Technical notes:** `src/components/Islamic/MusafirBadge.tsx`; `useMusafir(origin, destination)` hook in `RoutePreviewScreen`; threshold `MUSAFIR_THRESHOLD_KM = 88.7`; Haversine distance from `geoUtils.haversineDistance`
+**Estimate:** S
+
+---
+
+### MOB-111: Nearest Masjid/Surau card
+
+**Epic:** Tetapan Islam
+**Status:** 🔲 Todo
+**Priority:** High
+
+**As a** Muslim driver **I want** to quickly find the nearest masjid or surau **so that** I can plan a prayer stop during my journey.
+
+**Acceptance criteria:**
+- [ ] "Masjid/Surau Terdekat" button in Islamic Settings and also as a FAB on the map when Islamic mode is on
+- [ ] Calls `GET /v1/islamic/nearest-masjid?lat={lat}&lng={lng}&radius=5000` and shows top 3 results
+- [ ] Each result card shows: name, distance, type (Masjid/Surau/Musolla), "Tuju" button
+- [ ] Tapping "Tuju" sets the masjid as the navigation destination (adds as a waypoint if navigation is active)
+- [ ] Empty state: "Tiada masjid/surau dalam radius 5 km"
+- [ ] Error state with retry button
+
+**Technical notes:** `src/components/Islamic/NearestMasjidCard.tsx`; API calls `GET /v1/islamic/nearest-masjid`; backend queries Nominatim with `amenity=place_of_worship&religion=muslim`; radius configurable up to 10km
+**Estimate:** M
+
+---
+
+### MOB-112: Qibla compass direction overlay
+
+**Epic:** Tetapan Islam
+**Status:** 🔲 Todo
+**Priority:** High
+
+**As a** Muslim user **I want** a Qibla direction indicator **so that** I can face the correct direction for prayer wherever I am.
+
+**Acceptance criteria:**
+- [ ] Qibla compass accessible from Islamic Settings and via a 🧭 FAB on map when Islamic mode is enabled
+- [ ] Shows a compass rose with a teal arrow pointing toward Mecca
+- [ ] Displays degrees from north (e.g. "292° dari utara") and distance to Mecca (e.g. "7,432 km")
+- [ ] Uses device magnetometer (`react-native-sensors`) for live compass heading; arrow rotates in real time
+- [ ] If magnetometer unavailable, show static bearing with note "Kompas tidak tersedia"
+- [ ] Direction recalculated when GPS location changes significantly (>500m)
+
+**Technical notes:** `src/components/Islamic/QiblaOverlay.tsx`; `calculateQiblaDirection(lat, lng)` in `waktuSolatService.ts` (great-circle bearing to Mecca 21.3891°N, 39.8579°E); `react-native-sensors` for magnetometer; distance via Haversine
+**Estimate:** M
+
+---
+
+### MOB-113: Prayer time approaching alert during navigation
+
+**Epic:** Tetapan Islam
+**Status:** 🔲 Todo
+**Priority:** High
+
+**As a** Muslim driver **I want** to be notified when a prayer time is approaching during navigation **so that** I can find a surau before it's too late.
+
+**Acceptance criteria:**
+- [ ] When `prayerAlertMinutes` before any prayer (default 15 min), a non-blocking alert card slides in over the navigation HUD
+- [ ] Alert shows: prayer name, time remaining, "Surau terdekat: Al-Hidayah — 800m on route" with "Singgah" button
+- [ ] "Singgah" adds the nearest surau as a waypoint and reroutes
+- [ ] "Abaikan" dismisses the alert for the current prayer
+- [ ] Alert fires once per prayer — not repeated if dismissed
+- [ ] Alert only shown when `islamicStore.settings.prayerAlertMinutes > 0`
+
+**Technical notes:** `src/components/Islamic/PrayerAlertModal.tsx`; `useEffect` in `NavigationScreen` watching `getMinutesUntilPrayer(nextPrayer)`; nearest masjid fetched from `GET /v1/islamic/nearest-masjid` on alert trigger
+**Estimate:** M
+
+---
+
+### MOB-114: Azan — lower navigation voice during prayer time
+
+**Epic:** Tetapan Islam
+**Status:** 🔲 Todo
+**Priority:** Medium
+
+**As a** Muslim driver **I want** the navigation voice to be lowered automatically when azan begins **so that** the azan is not drowned out while I'm driving.
+
+**Acceptance criteria:**
+- [ ] At the exact azan time, **full azan audio plays** via `react-native-sound` (`assets/audio/azan.mp3` bundled in app)
+- [ ] Navigation TTS voice is paused (`Tts.stop()`) while azan plays; resumes automatically when azan audio ends (~3–4 min)
+- [ ] A "🕌 Waktu Asar" overlay banner appears on the navigation HUD for the duration of the azan
+- [ ] After azan ends (or user taps skip), TTS resumes and navigation continues normally
+- [ ] Only active when `islamicStore.settings.azanPauseNav === true`
+- [ ] Does not apply to Syuruk (sunrise) — only the 5 prayer waktu (Subuh, Zohor, Asar, Maghrib, Isyak)
+- [ ] Azan fires once per waktu — not repeated if skipped
+
+**Technical notes:** `NavigationScreen.tsx`; `useEffect` watching prayer timestamps vs `Date.now()`; `react-native-sound` for azan audio; audio asset `assets/audio/azan.mp3`; `sound.play()` → on complete: resume TTS; Syuruk excluded
+**Estimate:** S
+
+---
+
+### MOB-115: Halal POI filter for food search
+
+**Epic:** Tetapan Islam
+**Status:** 🔲 Todo
+**Priority:** Medium
+
+**As a** Muslim driver **I want** to filter food and restaurant search results to Halal only **so that** I don't accidentally navigate to a non-Halal restaurant.
+
+**Acceptance criteria:**
+- [ ] A "Halal Sahaja" toggle appears in the search filter sheet when Islamic mode is enabled
+- [ ] Default state follows `islamicStore.settings.showHalalFilterDefault` (default: off)
+- [ ] When enabled, Nominatim search appends `&tag:diet:halal=yes` to POI queries
+- [ ] Filter chip "🟢 Halal" shown in search bar when active
+- [ ] Non-halal results are hidden from results list; "Tiada tempat makan halal dalam kawasan ini" shown if empty
+
+**Technical notes:** `src/screens/SearchScreen.tsx`; filter appended in `geocodingService.searchPOI`; Nominatim tag filter `diet:halal=yes`
+**Estimate:** S
+
+---
+
+### MOB-116: Jumaat prayer reminder
+
+**Epic:** Tetapan Islam
+**Status:** 🔲 Todo
+**Priority:** Medium
+
+**As a** Muslim male driver **I want** a Jumaat (Friday) prayer reminder **so that** I remember to go to the masjid in time.
+
+**Acceptance criteria:**
+- [ ] Every Friday, a push notification fires `jumaat.reminderMinutes` before Zohor time (default: 30 min)
+- [ ] Notification body: "Jumaat — Zohor dalam 30 minit. Masjid terdekat: Masjid Al-Hidayah (1.2 km)"
+- [ ] Tapping notification opens map with route to nearest masjid
+- [ ] Only fires when `islamicStore.settings.jumaat.enabled === true`
+- [ ] Configurable reminder lead-time: 15, 30, 45, or 60 minutes before Zohor
+
+**Technical notes:** `firebase-messaging` scheduled notification or `@notifee/react-native` with trigger notification set each Thursday night after midnight prayer times are fetched; Friday check: `new Date().getDay() === 5`
+**Estimate:** M
+
